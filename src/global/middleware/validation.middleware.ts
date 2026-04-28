@@ -28,7 +28,13 @@ export const validateBody = <T extends object>(
 ): RequestHandler => {
   return async (req: Request, _res: Response, next: NextFunction) => {
     try {
-      const payload = plainToInstance(dto, req.body);
+      // `class-validator` will throw if asked to validate `undefined` (it reads `.constructor`).
+      // Express can leave `req.body` undefined for empty bodies or unsupported content-types.
+      const body =
+        req.body && typeof req.body === "object" && !Array.isArray(req.body)
+          ? req.body
+          : {};
+      const payload = plainToInstance(dto, body);
       const errors = await validate(payload, {
         ...defaultValidatorOptions,
         ...options,

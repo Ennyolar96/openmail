@@ -20,7 +20,10 @@ const defaultValidatorOptions = {
 const validateBody = (dto, options) => {
     return async (req, _res, next) => {
         try {
-            const payload = (0, class_transformer_1.plainToInstance)(dto, req.body);
+            const body = req.body && typeof req.body === "object" && !Array.isArray(req.body)
+                ? req.body
+                : {};
+            const payload = (0, class_transformer_1.plainToInstance)(dto, body);
             const errors = await (0, class_validator_1.validate)(payload, {
                 ...defaultValidatorOptions,
                 ...options,
