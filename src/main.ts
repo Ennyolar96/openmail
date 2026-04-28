@@ -1,16 +1,14 @@
-import "reflect-metadata";
 import { applicationMiddlewares } from "@/app.module";
 import { appErrorHandler } from "@/global/middleware";
 import dotenv from "dotenv";
 import express from "express";
-import { applicationRouters } from "./routers";
+import "reflect-metadata";
 
 
 dotenv.config({ quiet: true });
 
 const app = express();
 applicationMiddlewares(app);
-// applicationRouters(app);
 app.use(appErrorHandler);
 const PORT = process.env.PORT || 5001;
 

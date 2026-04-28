@@ -5,6 +5,7 @@ import cors from "cors";
 import hpp from "hpp";
 import compression from "compression";
 import os from "os";
+import { applicationRouters } from "./routers";
 
 export const applicationMiddlewares = (app: Application) => {
   app.use(
@@ -83,4 +84,7 @@ export const applicationMiddlewares = (app: Application) => {
   app.get("/", (req: Request, res: Response) => {
     res.send("Hello, Welcome");
   });
+
+
+  applicationRouters(app);
 };
