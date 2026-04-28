@@ -10,7 +10,7 @@ const cors_1 = __importDefault(require("cors"));
 const hpp_1 = __importDefault(require("hpp"));
 const compression_1 = __importDefault(require("compression"));
 const os_1 = __importDefault(require("os"));
-const smtp_router_1 = require("@/app/email/smtp.router");
+const smtp_router_1 = require("./app/email/smtp.router");
 const applicationMiddlewares = (app) => {
     app.use((0, helmet_1.default)({
         contentSecurityPolicy: {
