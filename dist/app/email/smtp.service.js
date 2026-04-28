@@ -32,33 +32,41 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SmtpService = void 0;
 const nodemailer = __importStar(require("nodemailer"));
-const p_queue_1 = __importDefault(require("p-queue"));
+async function mapWithConcurrency(items, concurrency, mapper) {
+    const results = new Array(items.length);
+    const workerCount = Math.max(1, Math.min(items.length, concurrency || 1));
+    let nextIndex = 0;
+    const workers = Array.from({ length: workerCount }, async () => {
+        while (true) {
+            const current = nextIndex++;
+            if (current >= items.length)
+                return;
+            try {
+                const value = await mapper(items[current]);
+                results[current] = { status: "fulfilled", value };
+            }
+            catch (reason) {
+                results[current] = { status: "rejected", reason };
+            }
+        }
+    });
+    await Promise.all(workers);
+    return results;
+}
 class SmtpService {
     async sendMail(payload) {
-        const queue = new p_queue_1.default({ concurrency: process.env.EMAIL_CONCURRENCY ? parseInt(process.env.EMAIL_CONCURRENCY) : 5 });
         const mail = this.config(payload.config);
+        const concurrency = process.env.EMAIL_CONCURRENCY
+            ? Number.parseInt(process.env.EMAIL_CONCURRENCY, 10)
+            : 5;
         try {
-            const task = payload.mail.to.map((to) => {
-                return queue.add(async () => {
-                    try {
-                        const result = await mail.sendMail({ ...payload.mail, to });
-                        return { to, response: result.response };
-                    }
-                    catch (error) {
-                        return Promise.reject({
-                            to,
-                            reason: error?.message || "Unknown error",
-                        });
-                    }
-                });
+            const data = await mapWithConcurrency(payload.mail.to, concurrency, async (to) => {
+                const result = await mail.sendMail({ ...payload.mail, to });
+                return { to, response: result.response };
             });
-            const data = await Promise.allSettled(task);
             const rejected = data.filter((item) => item.status === "rejected");
             const accepted = data.filter((item) => item.status === "fulfilled");
             return {

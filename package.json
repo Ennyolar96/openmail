@@ -4,13 +4,12 @@
   "type": "commonjs",
   "private": true,
   "scripts": {
-    "tsc:init": "bunx tsc --init",
-    "build": "bunx tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
-    "watch": "bunx tsc --watch",
+    "tsc:init": "tsc --init",
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "watch": "tsc --watch",
     "start": "node dist/main.js",
     "nodemon": "nodemon -r tsconfig-paths/register src/main.ts",
-    "start:dev": "npm-run-all --parallel watch nodemon",
-    "deploy": "netlify deploy --prod"
+    "start:dev": "npm-run-all --parallel watch nodemon"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -44,7 +43,6 @@
     "helmet": "^8.1.0",
     "hpp": "^0.2.3",
     "nodemailer": "^8.0.1",
-    "p-queue": "^9.2.0",
     "reflect-metadata": "^0.2.2",
     "serverless-http": "^4.0.0",
     "swagger-ui-express": "^5.0.1",

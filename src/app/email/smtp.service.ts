@@ -1,30 +1,49 @@
 import * as nodemailer from "nodemailer";
-import PQueue from "p-queue";
 import type { SendMailOutput, SendMailRequest } from "./input";
+
+async function mapWithConcurrency<TIn, TOut>(
+  items: readonly TIn[],
+  concurrency: number,
+  mapper: (item: TIn) => Promise<TOut>,
+): Promise<PromiseSettledResult<TOut>[]> {
+  const results: PromiseSettledResult<TOut>[] = new Array(items.length);
+  const workerCount = Math.max(1, Math.min(items.length, concurrency || 1));
+
+  let nextIndex = 0;
+  const workers = Array.from({ length: workerCount }, async () => {
+    while (true) {
+      const current = nextIndex++;
+      if (current >= items.length) return;
+
+      try {
+        const value = await mapper(items[current]);
+        results[current] = { status: "fulfilled", value };
+      } catch (reason) {
+        results[current] = { status: "rejected", reason };
+      }
+    }
+  });
+
+  await Promise.all(workers);
+  return results;
+}
 
 export class SmtpService {
   async sendMail(payload: SendMailRequest): Promise<SendMailOutput> {
-    const queue = new PQueue({ concurrency: process.env.EMAIL_CONCURRENCY ? parseInt(process.env.EMAIL_CONCURRENCY) : 5 })
     const mail = this.config(payload.config);
+    const concurrency = process.env.EMAIL_CONCURRENCY
+      ? Number.parseInt(process.env.EMAIL_CONCURRENCY, 10)
+      : 5;
 
     try {
-      // Map over 'to' addresses and limit concurrency
-      // Wrapping with try/catch ensures we capture the 'to' address even on failure
-      const task = payload.mail.to.map((to) => {
-        return queue.add(async () => {
-          try {
-            const result = await mail.sendMail({ ...payload.mail, to });
-            return { to, response: result.response as string };
-          } catch (error: any) {
-            return Promise.reject({
-              to,
-              reason: error?.message || "Unknown error",
-            });
-          }
-        });
-      });
-
-      const data = await Promise.allSettled(task);
+      const data = await mapWithConcurrency(
+        payload.mail.to,
+        concurrency,
+        async (to) => {
+          const result = await mail.sendMail({ ...payload.mail, to });
+          return { to, response: result.response as string };
+        },
+      );
 
       // TypeScript requires type predicates to narrow down union types from Promise.allSettled
       const rejected = data.filter(
