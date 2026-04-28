@@ -17,25 +17,25 @@ const PORT = process.env.PORT || 5001;
 
 
 
-async function bootstrap() {
-  app.listen(PORT, () => {
-    console.log(`http://localhost:${PORT}`);
-  });
+// async function bootstrap() {
+//   app.listen(PORT, () => {
+//     console.log(`http://localhost:${PORT}`);
+//   });
 
-  const gracefulShutdown = async () => {
-    console.log("Shutting down gracefully...");
-    process.exit(0);
-  };
+//   const gracefulShutdown = async () => {
+//     console.log("Shutting down gracefully...");
+//     process.exit(0);
+//   };
 
-  process.on("SIGTERM", gracefulShutdown);
-  process.on("SIGINT", gracefulShutdown);
-  process.on("unhandledRejection", gracefulShutdown);
-  process.on("uncaughtException", gracefulShutdown);
-}
+//   process.on("SIGTERM", gracefulShutdown);
+//   process.on("SIGINT", gracefulShutdown);
+//   process.on("unhandledRejection", gracefulShutdown);
+//   process.on("uncaughtException", gracefulShutdown);
+// }
 
-if (require.main === module) {
-  void bootstrap();
-}
+// if (require.main === module) {
+//   void bootstrap();
+// }
 
 
 export const handler = serverless(app);
