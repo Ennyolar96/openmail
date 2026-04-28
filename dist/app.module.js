@@ -10,7 +10,6 @@ const cors_1 = __importDefault(require("cors"));
 const hpp_1 = __importDefault(require("hpp"));
 const compression_1 = __importDefault(require("compression"));
 const os_1 = __importDefault(require("os"));
-const routers_1 = require("./routers");
 const applicationMiddlewares = (app) => {
     app.use((0, helmet_1.default)({
         contentSecurityPolicy: {
@@ -70,7 +69,14 @@ const applicationMiddlewares = (app) => {
     app.get("/", (req, res) => {
         res.send("Hello, Welcome");
     });
-    (0, routers_1.applicationRouters)(app);
+    app.post("/send-mail", async (req, res, next) => {
+        try {
+            res.status(200).json({ message: "I see you" });
+        }
+        catch (error) {
+            next(error);
+        }
+    });
 };
 exports.applicationMiddlewares = applicationMiddlewares;
 //# sourceMappingURL=app.module.js.map

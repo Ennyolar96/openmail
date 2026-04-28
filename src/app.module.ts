@@ -86,5 +86,15 @@ export const applicationMiddlewares = (app: Application) => {
   });
 
 
-  applicationRouters(app);
+  app.post(
+    "/send-mail",
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        // const result = await smtpController.sendMail(req.body as SendMailRequest);
+        res.status(200).json({ message: "I see you" });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
 };

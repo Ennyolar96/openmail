@@ -5,15 +5,5 @@ import { Application, NextFunction, Request, Response } from "express";
 
 export const applicationRouters = (app: Application) => {
     const smtpController = new SmtpController();
-    app.post(
-        "/send-mail",
-        async (req: Request, res: Response, next: NextFunction) => {
-            try {
-                const result = await smtpController.sendMail(req.body as SendMailRequest);
-                res.status(200).json(result);
-            } catch (error) {
-                next(error);
-            }
-        },
-    );
+
 }
