@@ -2,8 +2,7 @@
 import { SendMailRequest } from "@/app/email/input";
 import { validateBody } from "@/global/middleware";
 import { Application, NextFunction, Request, Response } from "express";
-import * as nodemailer from "nodemailer";
-import pLimit from "p-limit";
+// import pLimit from "p-limit";
 
 
 // const config = (config: SendMailRequest["config"]): nodemailer.Transporter => {
@@ -25,7 +24,7 @@ export const applicationRouters = (app: Application) => {
         validateBody<SendMailRequest>(SendMailRequest),
         async (req: Request, res: Response, next: NextFunction) => {
             const payload = req.body as SendMailRequest
-            const limit = pLimit(5);
+            // const limit = pLimit(5);
             // const mail = config(payload.config);
 
             try {
