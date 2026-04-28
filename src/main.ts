@@ -1,21 +1,18 @@
 import "reflect-metadata";
-import { appErrorHandler } from "@/global/middleware";
 import { applicationMiddlewares } from "@/app.module";
+import { appErrorHandler } from "@/global/middleware";
 import dotenv from "dotenv";
 import express from "express";
-import serverless from "serverless-http";
+import { applicationRouters } from "./routers";
 
 
 dotenv.config({ quiet: true });
 
 const app = express();
 applicationMiddlewares(app);
+applicationRouters(app);
 app.use(appErrorHandler);
-
 const PORT = process.env.PORT || 5001;
-
-
-
 
 async function bootstrap() {
   app.listen(PORT, () => {

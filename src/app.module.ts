@@ -5,7 +5,6 @@ import cors from "cors";
 import hpp from "hpp";
 import compression from "compression";
 import os from "os";
-import { smtpRouter } from "@/app/email/smtp.router";
 
 export const applicationMiddlewares = (app: Application) => {
   app.use(
@@ -33,7 +32,6 @@ export const applicationMiddlewares = (app: Application) => {
   app.use(compression());
   app.disable("x-powered-by");
 
-  app.use("/", smtpRouter.router);
   app.use((req: Request, res: Response, next: NextFunction) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("X-Frame-Options", "SAMEORIGIN");
