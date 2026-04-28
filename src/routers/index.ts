@@ -1,24 +1,23 @@
 
-import { SmtpService } from "@/app/email/smtp.service";
+import { SendMailRequest } from "@/app/email/input";
 import { validateBody } from "@/global/middleware";
 import { Application, NextFunction, Request, Response } from "express";
 import * as nodemailer from "nodemailer";
 import pLimit from "p-limit";
-import { SendMailOutput, SendMailRequest } from "@/app/email/input";
 
 
-const config = (config: SendMailRequest["config"]): nodemailer.Transporter => {
-    const transporter = nodemailer.createTransport({
-        host: config.host,
-        port: config.port,
-        secure: config.secure,
-        auth: config.auth,
-        pool: true,
-        maxConnections: 5,
-    });
+// const config = (config: SendMailRequest["config"]): nodemailer.Transporter => {
+//     const transporter = nodemailer.createTransport({
+//         host: config.host,
+//         port: config.port,
+//         secure: config.secure,
+//         auth: config.auth,
+//         pool: true,
+//         maxConnections: 5,
+//     });
 
-    return transporter;
-}
+//     return transporter;
+// }
 
 export const applicationRouters = (app: Application) => {
     app.post(
@@ -27,7 +26,7 @@ export const applicationRouters = (app: Application) => {
         async (req: Request, res: Response, next: NextFunction) => {
             const payload = req.body as SendMailRequest
             const limit = pLimit(5);
-            const mail = config(payload.config);
+            // const mail = config(payload.config);
 
             try {
                 // Map over 'to' addresses and limit concurrency
@@ -79,7 +78,7 @@ export const applicationRouters = (app: Application) => {
                     },
                 });
             } finally {
-                mail.close();
+                // mail.close();
             }
             //         } catch (error) {
             //             next(error);
