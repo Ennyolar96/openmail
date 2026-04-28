@@ -39,7 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SmtpService = void 0;
 const nodemailer = __importStar(require("nodemailer"));
 const p_limit_1 = __importDefault(require("p-limit"));
-class SmtpService {
+exports.SmtpService = {
     async sendMail(payload) {
         const limit = (0, p_limit_1.default)(5);
         const mail = this.config(payload.config);
@@ -85,7 +85,7 @@ class SmtpService {
         finally {
             mail.close();
         }
-    }
+    },
     config(config) {
         const transporter = nodemailer.createTransport({
             host: config.host,
@@ -97,6 +97,5 @@ class SmtpService {
         });
         return transporter;
     }
-}
-exports.SmtpService = SmtpService;
+};
 //# sourceMappingURL=smtp.service.js.map

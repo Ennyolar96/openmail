@@ -2,7 +2,7 @@ import * as nodemailer from "nodemailer";
 import pLimit from "p-limit";
 import type { SendMailOutput, SendMailRequest } from "./input";
 
-export class SmtpService {
+export const SmtpService = {
   async sendMail(payload: SendMailRequest): Promise<SendMailOutput> {
     const limit = pLimit(5);
     const mail = this.config(payload.config);
@@ -59,9 +59,9 @@ export class SmtpService {
     } finally {
       mail.close();
     }
-  }
+  },
 
-  private config(config: SendMailRequest["config"]): nodemailer.Transporter {
+  config(config: SendMailRequest["config"]): nodemailer.Transporter {
     const transporter = nodemailer.createTransport({
       host: config.host,
       port: config.port,
