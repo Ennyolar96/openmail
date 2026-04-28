@@ -32,25 +32,31 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SmtpService = void 0;
 const nodemailer = __importStar(require("nodemailer"));
+const p_queue_1 = __importDefault(require("p-queue"));
 class SmtpService {
     async sendMail(payload) {
-        const limit = 5;
+        const queue = new p_queue_1.default({ concurrency: process.env.EMAIL_CONCURRENCY ? parseInt(process.env.EMAIL_CONCURRENCY) : 5 });
         const mail = this.config(payload.config);
         try {
-            const task = payload.mail.to.map(async (to) => {
-                try {
-                    const result = await mail.sendMail({ ...payload.mail, to });
-                    return { to, response: result.response };
-                }
-                catch (error) {
-                    return Promise.reject({
-                        to,
-                        reason: error?.message || "Unknown error",
-                    });
-                }
+            const task = payload.mail.to.map((to) => {
+                return queue.add(async () => {
+                    try {
+                        const result = await mail.sendMail({ ...payload.mail, to });
+                        return { to, response: result.response };
+                    }
+                    catch (error) {
+                        return Promise.reject({
+                            to,
+                            reason: error?.message || "Unknown error",
+                        });
+                    }
+                });
             });
             const data = await Promise.allSettled(task);
             const rejected = data.filter((item) => item.status === "rejected");
