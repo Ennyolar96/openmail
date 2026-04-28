@@ -32,18 +32,38 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SmtpService = void 0;
 const nodemailer = __importStar(require("nodemailer"));
-const p_limit_1 = __importDefault(require("p-limit"));
-exports.SmtpService = {
+class SmtpService {
     async sendMail(payload) {
-        const limit = (0, p_limit_1.default)(5);
+        const limit = 5;
         const mail = this.config(payload.config);
         try {
+            const task = payload.mail.to.map(async (to) => {
+                try {
+                    const result = await mail.sendMail({ ...payload.mail, to });
+                    return { to, response: result.response };
+                }
+                catch (error) {
+                    return Promise.reject({
+                        to,
+                        reason: error?.message || "Unknown error",
+                    });
+                }
+            });
+            const data = await Promise.allSettled(task);
+            const rejected = data.filter((item) => item.status === "rejected");
+            const accepted = data.filter((item) => item.status === "fulfilled");
+            return {
+                success: true,
+                message: "Email send successfully",
+                data: {
+                    accepted: accepted.map((item) => item.value.to),
+                    rejected: rejected.map((item) => item.reason.to),
+                    response: accepted.map((item) => item.value.response),
+                },
+            };
         }
         catch (error) {
             return {
@@ -59,7 +79,7 @@ exports.SmtpService = {
         finally {
             mail.close();
         }
-    },
+    }
     config(config) {
         const transporter = nodemailer.createTransport({
             host: config.host,
@@ -71,5 +91,6 @@ exports.SmtpService = {
         });
         return transporter;
     }
-};
+}
+exports.SmtpService = SmtpService;
 //# sourceMappingURL=smtp.service.js.map

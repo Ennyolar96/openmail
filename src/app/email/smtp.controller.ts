@@ -1,10 +1,10 @@
-// import { SendMailRequest } from "./input";
-// import { SmtpService } from "./smtp.service";
+import { SendMailRequest } from "./input";
+import { SmtpService } from "./smtp.service";
 
-// const smtpService = new SmtpService();
-// export class SmtpController {
+const smtpService = new SmtpService();
+export class SmtpController {
 
-//   async sendMail(payload: SendMailRequest) {
-//     return smtpService.sendMail(payload);
-//   }
-// }
+    async sendMail(payload: SendMailRequest) {
+        return smtpService.sendMail(payload);
+    }
+}

@@ -44,7 +44,6 @@
     "helmet": "^8.1.0",
     "hpp": "^0.2.3",
     "nodemailer": "^8.0.1",
-    "p-limit": "^7.3.0",
     "reflect-metadata": "^0.2.2",
     "serverless-http": "^4.0.0",
     "swagger-ui-express": "^5.0.1",
