@@ -57,6 +57,7 @@ async function mapWithConcurrency(items, concurrency, mapper) {
     return results;
 }
 class SmtpService {
+    constructor() { }
     async sendMail(payload) {
         const mail = this.config(payload.config);
         const concurrency = process.env.EMAIL_CONCURRENCY

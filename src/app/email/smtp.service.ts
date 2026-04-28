@@ -29,6 +29,8 @@ async function mapWithConcurrency<TIn, TOut>(
 }
 
 export class SmtpService {
+  constructor() { }
+
   async sendMail(payload: SendMailRequest): Promise<SendMailOutput> {
     const mail = this.config(payload.config);
     const concurrency = process.env.EMAIL_CONCURRENCY

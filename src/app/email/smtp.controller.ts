@@ -1,10 +1,10 @@
 import { SendMailRequest } from "./input";
 import { SmtpService } from "./smtp.service";
 
-const smtpService = new SmtpService();
 export class SmtpController {
+    constructor(private readonly smtpService: SmtpService) { }
 
     async sendMail(payload: SendMailRequest) {
-        return smtpService.sendMail(payload);
+        return this.smtpService.sendMail(payload);
     }
 }
