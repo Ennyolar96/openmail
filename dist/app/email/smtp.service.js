@@ -44,32 +44,6 @@ exports.SmtpService = {
         const limit = (0, p_limit_1.default)(5);
         const mail = this.config(payload.config);
         try {
-            const task = payload.mail.to.map((to) => {
-                return limit(async () => {
-                    try {
-                        const result = await mail.sendMail({ ...payload.mail, to });
-                        return { to, response: result.response };
-                    }
-                    catch (error) {
-                        return Promise.reject({
-                            to,
-                            reason: error?.message || "Unknown error",
-                        });
-                    }
-                });
-            });
-            const data = await Promise.allSettled(task);
-            const rejected = data.filter((item) => item.status === "rejected");
-            const accepted = data.filter((item) => item.status === "fulfilled");
-            return {
-                success: true,
-                message: "Email send successfully",
-                data: {
-                    accepted: accepted.map((item) => item.value.to),
-                    rejected: rejected.map((item) => item.reason.to),
-                    response: accepted.map((item) => item.value.response),
-                },
-            };
         }
         catch (error) {
             return {

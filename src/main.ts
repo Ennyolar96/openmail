@@ -1,8 +1,8 @@
+import "reflect-metadata";
 import { applicationMiddlewares } from "@/app.module";
 import { appErrorHandler } from "@/global/middleware";
 import dotenv from "dotenv";
 import express from "express";
-import "reflect-metadata";
 
 
 dotenv.config({ quiet: true });
