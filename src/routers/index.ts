@@ -7,7 +7,6 @@ export const applicationRouters = (app: Application) => {
     const smtpController = new SmtpController();
     app.post(
         "/send-mail",
-        validateBody(SendMailRequest),
         async (req: Request, res: Response, next: NextFunction) => {
             try {
                 const result = await smtpController.sendMail(req.body as SendMailRequest);
