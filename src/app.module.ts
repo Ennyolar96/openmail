@@ -1,12 +1,14 @@
-import type { Application, NextFunction, Request, Response } from "express";
-import helmet from "helmet";
-import express from "express";
-import cors from "cors";
-import hpp from "hpp";
 import compression from "compression";
+import cors from "cors";
+import type { Application, NextFunction, Request, Response } from "express";
+import express from "express";
+import helmet from "helmet";
+import hpp from "hpp";
 import os from "os";
-import { applicationRouters } from "./routers";
+import { SmtpController } from "./app/email/smtp.controller";
+import { SendMailRequest } from "./app/email/input";
 
+const smtpController = new SmtpController();
 export const applicationMiddlewares = (app: Application) => {
   app.use(
     helmet({
@@ -90,8 +92,8 @@ export const applicationMiddlewares = (app: Application) => {
     "/send-mail",
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        // const result = await smtpController.sendMail(req.body as SendMailRequest);
-        res.status(200).json({ message: "I see you" });
+        const result = await smtpController.sendMail(req.body as SendMailRequest);
+        res.status(200).json(result);
       } catch (error) {
         next(error);
       }

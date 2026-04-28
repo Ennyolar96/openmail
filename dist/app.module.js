@@ -4,12 +4,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.applicationMiddlewares = void 0;
-const helmet_1 = __importDefault(require("helmet"));
-const express_1 = __importDefault(require("express"));
-const cors_1 = __importDefault(require("cors"));
-const hpp_1 = __importDefault(require("hpp"));
 const compression_1 = __importDefault(require("compression"));
+const cors_1 = __importDefault(require("cors"));
+const express_1 = __importDefault(require("express"));
+const helmet_1 = __importDefault(require("helmet"));
+const hpp_1 = __importDefault(require("hpp"));
 const os_1 = __importDefault(require("os"));
+const smtp_controller_1 = require("./app/email/smtp.controller");
+const smtpController = new smtp_controller_1.SmtpController();
 const applicationMiddlewares = (app) => {
     app.use((0, helmet_1.default)({
         contentSecurityPolicy: {
@@ -71,7 +73,8 @@ const applicationMiddlewares = (app) => {
     });
     app.post("/send-mail", async (req, res, next) => {
         try {
-            res.status(200).json({ message: "I see you" });
+            const result = await smtpController.sendMail(req.body);
+            res.status(200).json(result);
         }
         catch (error) {
             next(error);
