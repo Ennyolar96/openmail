@@ -10,7 +10,6 @@ const cors_1 = __importDefault(require("cors"));
 const hpp_1 = __importDefault(require("hpp"));
 const compression_1 = __importDefault(require("compression"));
 const os_1 = __importDefault(require("os"));
-const smtp_router_1 = require("./app/email/smtp.router");
 const applicationMiddlewares = (app) => {
     app.use((0, helmet_1.default)({
         contentSecurityPolicy: {
@@ -34,7 +33,6 @@ const applicationMiddlewares = (app) => {
     app.use((0, hpp_1.default)());
     app.use((0, compression_1.default)());
     app.disable("x-powered-by");
-    app.use("/api", smtp_router_1.smtpRouter.router);
     app.use((req, res, next) => {
         res.setHeader("X-Content-Type-Options", "nosniff");
         res.setHeader("X-Frame-Options", "SAMEORIGIN");
